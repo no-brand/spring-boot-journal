@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -50,6 +51,9 @@ public class SpringBootJournalApplication implements CommandLineRunner, Applicat
 					"07/10/2021"));
 		};
 	}
+
+	@Value("${server.ip}")
+	String serverIp;
 
 	public static void main(String[] args) {
 		/*
@@ -98,6 +102,7 @@ public class SpringBootJournalApplication implements CommandLineRunner, Applicat
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("CommandLineRunner.run: " + Arrays.toString(args));
+		log.info("Server IP: " + serverIp);
 	}
 }
 
