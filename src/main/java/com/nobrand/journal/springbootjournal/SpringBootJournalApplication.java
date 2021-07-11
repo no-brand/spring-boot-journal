@@ -5,6 +5,8 @@ import com.nobrand.journal.springbootjournal.repository.JournalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +15,10 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
 import java.io.PrintStream;
+import java.util.List;
 
 
 /*
@@ -75,6 +80,33 @@ public class SpringBootJournalApplication {
 					}
 				})
 				.run(args);
+	}
+}
+
+/*
+* Bean can receive Spring boot arguments.
+*
+* $ java -jar target/spring-boot-journal-0.0.1-SNAPSHOT.jar --enable arg1 arg2
+* :  > has enable option
+* :  > other options
+* :    arg1
+* :    arg2
+* */
+@Component
+class MyComponent {
+
+	private static final Logger log = LoggerFactory.getLogger(MyComponent.class);
+
+	@Autowired
+	public MyComponent(ApplicationArguments args) {
+		boolean enable = args.containsOption("enable");
+		if (enable)
+			log.info(" > has enable option");
+
+		List<String> _args = args.getNonOptionArgs();
+		log.info(" > other options");
+		if (!_args.isEmpty())
+			_args.forEach(file -> log.info("   " + file));
 	}
 
 }
