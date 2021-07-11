@@ -2,10 +2,15 @@ package com.nobrand.journal.springbootjournal;
 
 import com.nobrand.journal.springbootjournal.domain.Journal;
 import com.nobrand.journal.springbootjournal.repository.JournalRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import java.io.PrintStream;
@@ -40,21 +45,36 @@ public class SpringBootJournalApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(SpringBootJournalApplication.class);
+
+		Logger log = LoggerFactory.getLogger(SpringBootJournalApplication.class);
 
 		/*
-		* Custom settings will be applied.
-		* One of which is setting custom banner, you can implement;
-		*   however, resources/banner.txt has high priority.
+		* SpringApplication provides builder pattern, as fluent API.
+		* It provides high readability.
 		* */
-		app.setBanner(new Banner() {
-			@Override
-			public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-				out.print("\n\nCustom Banner\n\n");
-			}
-		});
-
-		app.run(args);
+		new SpringApplicationBuilder()
+				.banner(new Banner() {
+					@Override
+					public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+						out.print("\n\nCustom Banner\n\n");
+					}
+				})
+				.sources(SpringBootJournalApplication.class)
+				.logStartupInfo(true)
+				.listeners(new ApplicationListener<ApplicationEvent>() {
+					/*
+					* ApplicationEvent status can be printed with logger.
+					* (ex) ApplicationContextInitializedEvent
+					*      ApplicationPreparedEvent
+					*      ApplicationStartedEvent
+					*      ApplicationReadyEvent
+					* */
+					@Override
+					public void onApplicationEvent(ApplicationEvent applicationEvent) {
+						log.info(" > " + applicationEvent.getClass().getCanonicalName());
+					}
+				})
+				.run(args);
 	}
 
 }
