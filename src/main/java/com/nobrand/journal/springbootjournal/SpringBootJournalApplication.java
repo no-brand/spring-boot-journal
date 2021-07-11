@@ -8,6 +8,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 
+/*
+* @SpringBootApplication is combination of
+*   @SpringBootConfiguration, @EnableAutoConfiguration, @ComponentScan.
+* Spring Boot does not generate code; however we do not have to care about web.xml, @Configuration, Bean configuration.
+*
+* Specifically, @EnableAutoConfiguration helps to distinguish components.
+* Also, Spring boot works standalone with tomcat as non-functional element.
+* You can replace tomcat with others, such as jetty or undertow.
+* */
 @SpringBootApplication
 public class SpringBootJournalApplication {
 
