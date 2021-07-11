@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.Banner;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationEvent;
@@ -18,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,7 +30,9 @@ import java.util.List;
 * You can replace tomcat with others, such as jetty or undertow.
 * */
 @SpringBootApplication
-public class SpringBootJournalApplication {
+public class SpringBootJournalApplication implements CommandLineRunner, ApplicationRunner {
+
+	private static final Logger log = LoggerFactory.getLogger(SpringBootJournalApplication.class);
 
 	/*
 	* InitializingBean helps for initializing something.
@@ -40,6 +41,7 @@ public class SpringBootJournalApplication {
 	@Bean
 	InitializingBean saveData(JournalRepository repo) {
 		return() -> {
+			log.info("InitializingBean: Initialize data");
 			repo.save(new Journal("Start Spring Boot", "I decided to study Spring Boot",
 					"07/08/2021"));
 			repo.save(new Journal("Make Spring Boot Project", "I made the first Spring Boot Project",
@@ -50,9 +52,6 @@ public class SpringBootJournalApplication {
 	}
 
 	public static void main(String[] args) {
-
-		Logger log = LoggerFactory.getLogger(SpringBootJournalApplication.class);
-
 		/*
 		* SpringApplication provides builder pattern, as fluent API.
 		* It provides high readability.
@@ -80,6 +79,25 @@ public class SpringBootJournalApplication {
 					}
 				})
 				.run(args);
+	}
+
+	/*
+	* Both ApplicationRunner, CommandLineRunner implements run methods
+	* to prepare initializing Spring boot application.
+	* TODO: difference against @Bean InitializingBean to initialize data above.
+	*
+	* Between ApplicationStartedEvent and ApplicationReadyEvent, below run methods are called.
+	* @Bean InitializingBean created before ApplicationStartedEvent for IoC,
+	* so InitializingBean called the most front among them.
+	* */
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		log.info("ApplicationRunner.run: " + args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		log.info("CommandLineRunner.run: " + Arrays.toString(args));
 	}
 }
 
